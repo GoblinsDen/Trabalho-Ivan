@@ -182,7 +182,7 @@ public class NetworkUI : MonoBehaviourPunCallbacks
 
     void BackMenu()
     {
-        UiHandler(Vitoria, false);
+        UiHandler(VitoriaP1, false);
         UiHandler(loginUI, true);
     }
 
