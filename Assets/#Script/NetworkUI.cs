@@ -22,6 +22,9 @@ public class NetworkUI : MonoBehaviourPunCallbacks
     [SerializeField] GameObject lobbyUI;
     [SerializeField] GameObject roomUI;
 
+    [Header("InGame")]
+    [SerializeField] GameObject inGame;
+
     [Header("Button")]
     [SerializeField] GameObject startGame; // Só o Host pode ver
     [SerializeField] Button startGameButton; //Só o Host pode ver
@@ -34,7 +37,7 @@ public class NetworkUI : MonoBehaviourPunCallbacks
     [SerializeField] InputField roomInputName;
 
     [Header("Lista de Nomes")]
-    [SerializeField] TextMeshProUGUI name;
+    [SerializeField] Text name;
 
     string playerNameTemp;
 
@@ -45,6 +48,7 @@ public class NetworkUI : MonoBehaviourPunCallbacks
         loginUI.gameObject.SetActive(true);
         lobbyUI.gameObject.SetActive(false);
         roomUI.gameObject.SetActive(false);
+        inGame.gameObject.SetActive(false);
 
         startGameButton.onClick.AddListener(OnStartGameButtonClicked);
         logInButton.onClick.AddListener(OnLogIn);
@@ -61,7 +65,7 @@ public class NetworkUI : MonoBehaviourPunCallbacks
         playerInputName.text = playerNameTemp;
     }
 
-    void UiHandler(GameObject ui, bool isActive)
+    public void UiHandler(GameObject ui, bool isActive)
     {
         ui.gameObject.SetActive(isActive);
     }
@@ -95,7 +99,7 @@ public class NetworkUI : MonoBehaviourPunCallbacks
 
         RoomOptions roomOptions = new RoomOptions()
         {
-            MaxPlayers = 10
+            MaxPlayers = 2
         };
 
         PhotonNetwork.JoinOrCreateRoom(roomName, roomOptions, TypedLobby.Default);
@@ -157,8 +161,8 @@ public class NetworkUI : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            // Load the game scene for all players
-            PhotonNetwork.LoadLevel("InGame");
+            UiHandler(roomUI, false);
+            UiHandler(inGame, true);
         }
     }
 
