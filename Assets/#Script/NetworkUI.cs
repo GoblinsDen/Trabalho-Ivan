@@ -6,8 +6,6 @@ using Photon.Pun;
 //UsarUi
 using UnityEngine.UI;
 using TMPro;
-//Configurar cenas
-using UnityEngine.SceneManagement;
 
 public class NetworkUI : MonoBehaviourPunCallbacks
 {
@@ -21,6 +19,13 @@ public class NetworkUI : MonoBehaviourPunCallbacks
     [SerializeField] GameObject loginUI;
     [SerializeField] GameObject lobbyUI;
     [SerializeField] GameObject roomUI;
+    [SerializeField] GameObject VitoriaP1;
+    [SerializeField] GameObject VitoriaP2;
+    [SerializeField] GameObject Vitoria;
+
+    [Header("Placar")]
+    [SerializeField] TextMeshProUGUI Player1;
+    [SerializeField] TextMeshProUGUI Player2;
 
     [Header("InGame")]
     [SerializeField] GameObject inGame;
@@ -31,6 +36,7 @@ public class NetworkUI : MonoBehaviourPunCallbacks
     [SerializeField] Button logInButton;
     [SerializeField] Button joinRoomButton;
     [SerializeField] Button createRoomButton;
+    [SerializeField] Button backMenu;
 
     [Header("InputField")]
     [SerializeField] InputField playerInputName;
@@ -49,11 +55,14 @@ public class NetworkUI : MonoBehaviourPunCallbacks
         lobbyUI.gameObject.SetActive(false);
         roomUI.gameObject.SetActive(false);
         inGame.gameObject.SetActive(false);
+        VitoriaP1.gameObject.SetActive(false);
+        VitoriaP2.gameObject.SetActive(false);
 
         startGameButton.onClick.AddListener(OnStartGameButtonClicked);
         logInButton.onClick.AddListener(OnLogIn);
         joinRoomButton.onClick.AddListener(searchQuickGame);
         createRoomButton.onClick.AddListener(CreateRoom);
+        backMenu.onClick.AddListener(BackMenu);
 
         GenerateDefaultName();
 
@@ -65,7 +74,7 @@ public class NetworkUI : MonoBehaviourPunCallbacks
         playerInputName.text = playerNameTemp;
     }
 
-    public void UiHandler(GameObject ui, bool isActive)
+    void UiHandler(GameObject ui, bool isActive)
     {
         ui.gameObject.SetActive(isActive);
     }
@@ -161,9 +170,18 @@ public class NetworkUI : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsMasterClient)
         {
+            Player1.text = "0";
+            Player2.text = "0";
+            Invoke("LancarBola", 4f);
             UiHandler(roomUI, false);
             UiHandler(inGame, true);
         }
+    }
+
+    void BackMenu()
+    {
+        UiHandler(Vitoria, false);
+        UiHandler(loginUI, true);
     }
 
 }
