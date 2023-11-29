@@ -2504,7 +2504,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1140356749}
-  - {fileID: 1869741666}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3355,7 +3354,7 @@ MonoBehaviour:
   Player2: {fileID: 1149908758}
   inGame: {fileID: 1591278311}
   VitoriaP1: {fileID: 1140356748}
-  VitoriaP2: {fileID: 1869741665}
+  refScript: {fileID: 1581883314}
 --- !u!212 &1332692773
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3920,15 +3919,22 @@ MonoBehaviour:
   loginUI: {fileID: 1875440694}
   lobbyUI: {fileID: 651236613}
   roomUI: {fileID: 1392395184}
+  VitoriaP1: {fileID: 1140356748}
+  VitoriaP2: {fileID: 0}
+  Vitoria: {fileID: 856511875}
+  Player1: {fileID: 292322701}
+  Player2: {fileID: 1149908758}
   inGame: {fileID: 1591278311}
   startGame: {fileID: 845659785}
   startGameButton: {fileID: 83528551}
   logInButton: {fileID: 657911397}
   joinRoomButton: {fileID: 176960005}
   createRoomButton: {fileID: 1745366948}
+  backMenu: {fileID: 612069420}
   playerInputName: {fileID: 1808078741}
   roomInputName: {fileID: 1828660757}
   name: {fileID: 981823842}
+  refScript: {fileID: 1332692772}
 --- !u!1 &1591278311
 GameObject:
   m_ObjectHideFlags: 0
@@ -4608,42 +4614,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1828660755}
   m_CullTransparentMesh: 1
---- !u!1 &1869741665
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1869741666}
-  m_Layer: 5
-  m_Name: VitoriaP2
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1869741666
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1869741665}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 856511879}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1875440694
 GameObject:
   m_ObjectHideFlags: 0
