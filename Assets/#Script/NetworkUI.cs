@@ -45,6 +45,8 @@ public class NetworkUI : MonoBehaviourPunCallbacks
     [Header("Lista de Nomes")]
     [SerializeField] Text name;
 
+    [Header("Script")]
+    public Bola_Movimento refScript;
     string playerNameTemp;
 
     void Start()
@@ -56,7 +58,7 @@ public class NetworkUI : MonoBehaviourPunCallbacks
         roomUI.gameObject.SetActive(false);
         inGame.gameObject.SetActive(false);
         VitoriaP1.gameObject.SetActive(false);
-        VitoriaP2.gameObject.SetActive(false);
+        //VitoriaP2.gameObject.SetActive(false);
 
         startGameButton.onClick.AddListener(OnStartGameButtonClicked);
         logInButton.onClick.AddListener(OnLogIn);
@@ -74,7 +76,7 @@ public class NetworkUI : MonoBehaviourPunCallbacks
         playerInputName.text = playerNameTemp;
     }
 
-    void UiHandler(GameObject ui, bool isActive)
+    public void UiHandler(GameObject ui, bool isActive)
     {
         ui.gameObject.SetActive(isActive);
     }
@@ -172,9 +174,9 @@ public class NetworkUI : MonoBehaviourPunCallbacks
         {
             Player1.text = "0";
             Player2.text = "0";
-            Invoke("LancarBola", 4f);
             UiHandler(roomUI, false);
             UiHandler(inGame, true);
+            refScript.LancarBola();
         }
     }
 

@@ -20,7 +20,9 @@ public class Bola_Movimento : MonoBehaviourPunCallbacks
     [Header("Telas")]
     [SerializeField] GameObject inGame;
     [SerializeField] GameObject VitoriaP1;
-    [SerializeField] GameObject VitoriaP2;
+    //[SerializeField] GameObject VitoriaP2;
+
+    public NetworkUI refScript;
 
     private int hitCounter;
     private Rigidbody2D rb;
@@ -36,7 +38,7 @@ public class Bola_Movimento : MonoBehaviourPunCallbacks
         rb.velocity = Vector2.ClampMagnitude(rb.velocity, speed + (acc * hitCounter));
     }
 
-    void LancarBola()
+    public void LancarBola()
     {
         float x = Random.Range(0, 2) == 0 ? -1 : 1;
         float y = Random.Range(0, 2) == 0 ? -1 : 1;
@@ -97,20 +99,15 @@ public class Bola_Movimento : MonoBehaviourPunCallbacks
         }
         if (Player1.text == "5")
         {
-            UiHandler(inGame, false);
-            UiHandler(VitoriaP1, true);
+            refScript.UiHandler(inGame, false);
+            refScript.UiHandler(VitoriaP1, true);
             PhotonNetwork.Disconnect();
         }
         else if (Player2.text == "5")
         {
-            UiHandler(inGame, false);
-            UiHandler(VitoriaP2, true);
+            refScript.UiHandler(inGame, false);
+            //refScript.UiHandler(VitoriaP2, true);
             //Debug.Log("Player 2 venceu");
         }
-    }
-
-    void UiHandler(GameObject ui, bool isActive)
-    {
-        ui.gameObject.SetActive(isActive);
     }
 }
