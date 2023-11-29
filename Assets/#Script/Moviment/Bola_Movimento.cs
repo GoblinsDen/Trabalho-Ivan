@@ -6,10 +6,8 @@ using Photon.Pun;
 //UsarUi
 using UnityEngine.UI;
 using TMPro;
-//Configurar cenas
-using UnityEngine.SceneManagement;
 
-public class Bola_Movimento : MonoBehaviour
+public class Bola_Movimento : MonoBehaviourPunCallbacks
 {
     [Header("Velocidade")]
     [SerializeField] float speed = 5.0f; // Velocidade inicial da bola
@@ -18,6 +16,11 @@ public class Bola_Movimento : MonoBehaviour
     [Header("Placar")]
     [SerializeField] TextMeshProUGUI Player1;
     [SerializeField] TextMeshProUGUI Player2;
+
+    [Header("Telas")]
+    [SerializeField] GameObject inGame;
+    [SerializeField] GameObject VitoriaP1;
+    [SerializeField] GameObject VitoriaP2;
 
     private int hitCounter;
     private Rigidbody2D rb;
@@ -94,12 +97,20 @@ public class Bola_Movimento : MonoBehaviour
         }
         if (Player1.text == "5")
         {
-            Debug.Log("Player 1 venceu");
+            UiHandler(inGame, false);
+            UiHandler(VitoriaP1, true);
+            PhotonNetwork.Disconnect();
         }
         else if (Player2.text == "5")
         {
-            Debug.Log("Player 2 venceu");
+            UiHandler(inGame, false);
+            UiHandler(VitoriaP2, true);
+            //Debug.Log("Player 2 venceu");
         }
     }
 
+    void UiHandler(GameObject ui, bool isActive)
+    {
+        ui.gameObject.SetActive(isActive);
+    }
 }
