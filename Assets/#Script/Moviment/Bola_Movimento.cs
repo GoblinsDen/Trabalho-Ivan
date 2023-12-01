@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Realtime;
 using Photon.Pun;
 //UsarUi
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 
@@ -18,17 +19,27 @@ public class Bola_Movimento : MonoBehaviourPunCallbacks
     [SerializeField] TextMeshProUGUI Player2;
 
     [Header("Telas")]
-    [SerializeField] GameObject inGame;
-    [SerializeField] GameObject VitoriaP1;
-    //[SerializeField] GameObject VitoriaP2;
+    [SerializeField] GameObject Vitoria;
+    [SerializeField] GameObject Derrota;
+    [SerializeField] GameObject HUD;
 
-    public NetworkUI refScript;
+    [Header("Button")]
+
+    [SerializeField] Button BackMenu;
+    [SerializeField] Button BackMenu2;
 
     private int hitCounter;
     private Rigidbody2D rb;
 
     void Start()
     {
+        Vitoria.gameObject.SetActive(false);
+        Derrota.gameObject.SetActive(false);
+        HUD.gameObject.SetActive(true);
+
+       BackMenu.onClick.AddListener(BacktoMenu);
+       BackMenu2.onClick.AddListener(BacktoMenu);
+
         rb = GetComponent<Rigidbody2D>();
         Invoke("LancarBola", 3f);
     }
@@ -90,24 +101,57 @@ public class Bola_Movimento : MonoBehaviourPunCallbacks
         if (transform.position.x > 0)
         {
             ResetarBola();
-            Player1.text = (int.Parse(Player1.text) + 1).ToString();
+            UpdateScore(1); // Atualiza o placar do Player 1
         }
         else if (transform.position.x < 0)
         {
             ResetarBola();
-            Player2.text = (int.Parse(Player2.text) + 1).ToString();
-        }
-        if (Player1.text == "5")
-        {
-            refScript.UiHandler(inGame, false);
-            refScript.UiHandler(VitoriaP1, true);
-            PhotonNetwork.Disconnect();
-        }
-        else if (Player2.text == "5")
-        {
-            refScript.UiHandler(inGame, false);
-            //refScript.UiHandler(VitoriaP2, true);
-            //Debug.Log("Player 2 venceu");
+            UpdateScore(2); // Atualiza o placar do Player 2
         }
     }
+
+    [PunRPC]
+    void UpdateScore(int player)
+    {
+        if (player == 1)
+        {
+            Player1.text = (int.Parse(Player1.text) + 1).ToString();
+            if (Player1.text == "5")
+            {
+                photonView.RPC("EndGame", RpcTarget.All, 1);
+            }
+        }
+        else if (player == 2)
+        {
+            Player2.text = (int.Parse(Player2.text) + 1).ToString();
+            if (Player2.text == "5")
+            {
+                photonView.RPC("EndGame", RpcTarget.All, 2);
+            }
+        }
+    }
+
+    void BacktoMenu()
+    {
+        PhotonNetwork.LoadLevel("SampleScene");
+    }
+
+    [PunRPC]
+    void EndGame(int winner)
+    {
+        
+        if ((winner == 1 && photonView.IsMine) || (winner == 2 && !photonView.IsMine))
+        {
+            HUD.gameObject.SetActive(false);
+            Vitoria.gameObject.SetActive(true);
+        }
+        else
+        {
+            HUD.gameObject.SetActive(false);
+            Derrota.gameObject.SetActive(true);
+        }
+
+        PhotonNetwork.Disconnect();
+    }
+
 }

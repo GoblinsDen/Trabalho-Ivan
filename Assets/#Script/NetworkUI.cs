@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 //Usar Photon
 using Photon.Realtime;
 using Photon.Pun;
@@ -19,16 +20,6 @@ public class NetworkUI : MonoBehaviourPunCallbacks
     [SerializeField] GameObject loginUI;
     [SerializeField] GameObject lobbyUI;
     [SerializeField] GameObject roomUI;
-    [SerializeField] GameObject VitoriaP1;
-    [SerializeField] GameObject VitoriaP2;
-    [SerializeField] GameObject Vitoria;
-
-    [Header("Placar")]
-    [SerializeField] TextMeshProUGUI Player1;
-    [SerializeField] TextMeshProUGUI Player2;
-
-    [Header("InGame")]
-    [SerializeField] GameObject inGame;
 
     [Header("Button")]
     [SerializeField] GameObject startGame; // Só o Host pode ver
@@ -36,7 +27,6 @@ public class NetworkUI : MonoBehaviourPunCallbacks
     [SerializeField] Button logInButton;
     [SerializeField] Button joinRoomButton;
     [SerializeField] Button createRoomButton;
-    [SerializeField] Button backMenu;
 
     [Header("InputField")]
     [SerializeField] InputField playerInputName;
@@ -45,8 +35,6 @@ public class NetworkUI : MonoBehaviourPunCallbacks
     [Header("Lista de Nomes")]
     [SerializeField] Text name;
 
-    [Header("Script")]
-    public Bola_Movimento refScript;
     string playerNameTemp;
 
     void Start()
@@ -56,18 +44,20 @@ public class NetworkUI : MonoBehaviourPunCallbacks
         loginUI.gameObject.SetActive(true);
         lobbyUI.gameObject.SetActive(false);
         roomUI.gameObject.SetActive(false);
-        inGame.gameObject.SetActive(false);
-        VitoriaP1.gameObject.SetActive(false);
-        //VitoriaP2.gameObject.SetActive(false);
 
-        startGameButton.onClick.AddListener(OnStartGameButtonClicked);
+        startGameButton.onClick.AddListener(StartGame);
         logInButton.onClick.AddListener(OnLogIn);
         joinRoomButton.onClick.AddListener(searchQuickGame);
         createRoomButton.onClick.AddListener(CreateRoom);
-        backMenu.onClick.AddListener(BackMenu);
 
         GenerateDefaultName();
 
+    }
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(this.gameObject);
+        SceneManager.sceneLoaded += OnGameplayLoaded;
     }
 
     void GenerateDefaultName()
@@ -165,25 +155,42 @@ public class NetworkUI : MonoBehaviourPunCallbacks
 
     void CreatePlayer()
     {
-        PhotonNetwork.Instantiate(myPlayer.name, myPlayer.transform.position, myPlayer.transform.rotation);
-    }
+        object playerType;
 
-    public void OnStartGameButtonClicked()
-    {
-        if (PhotonNetwork.IsMasterClient)
+        PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("characterType", out playerType);
+
+        if (PhotonNetwork.LocalPlayer.IsMasterClient)
         {
-            Player1.text = "0";
-            Player2.text = "0";
-            UiHandler(roomUI, false);
-            UiHandler(inGame, true);
-            refScript.LancarBola();
+            Vector2 startPositionPlayer = new Vector2(-(float)7.5, 0);
+            Quaternion startRotationPlayer = new Quaternion(0, 0, 0, 1);
+            PhotonNetwork.Instantiate(myPlayer.name, startPositionPlayer, startRotationPlayer);
+
+        }
+        else
+        {
+            Vector2 startPositionPlayer = new Vector2((float)7.5, 0);
+            Quaternion startRotationPlayer = new Quaternion(0, 0, 0, 1);
+            PhotonNetwork.Instantiate(myPlayer.name, startPositionPlayer, startRotationPlayer);
         }
     }
 
-    void BackMenu()
+    [PunRPC]
+    public void StartGame()
     {
-        UiHandler(VitoriaP1, false);
-        UiHandler(loginUI, true);
+        PhotonNetwork.LoadLevel("Gameplay");
+    }
+
+    public void StartGameRPC()
+    {
+        GetComponent<PhotonView>().RPC("StartGameRPC", RpcTarget.All);
+    }
+
+    void OnGameplayLoaded(Scene Scene, LoadSceneMode SceneMode)
+    {
+        if (Scene.name == "Gameplay")
+        {
+            CreatePlayer();
+        }
     }
 
 }
