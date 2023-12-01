@@ -1368,7 +1368,7 @@ GameObject:
   m_Component:
   - component: {fileID: 845659786}
   m_Layer: 5
-  m_Name: StartGame_btn
+  m_Name: StartGame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2114,6 +2114,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1581883313}
   - component: {fileID: 1581883314}
+  - component: {fileID: 1581883315}
   m_Layer: 0
   m_Name: Multiplayer
   m_TagString: Untagged
@@ -2150,10 +2151,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Network: {fileID: 1581883311}
   myPlayer: {fileID: 5562965365774979614, guid: 50aaee6ba4958054c8529d49327bb1bb, type: 3}
+  Bola: {fileID: 1577410660871039070, guid: 5bd4212f5cbb6614a999eb927b580453, type: 3}
   loginUI: {fileID: 1875440694}
   lobbyUI: {fileID: 651236613}
   roomUI: {fileID: 1392395184}
-  startGame: {fileID: 83528549}
+  startGame: {fileID: 845659785}
   startGameButton: {fileID: 83528551}
   logInButton: {fileID: 657911397}
   joinRoomButton: {fileID: 176960005}
@@ -2161,6 +2163,28 @@ MonoBehaviour:
   playerInputName: {fileID: 1808078741}
   roomInputName: {fileID: 1828660757}
   name: {fileID: 981823842}
+--- !u!114 &1581883315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1581883311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 1
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &1745366946
 GameObject:
   m_ObjectHideFlags: 0

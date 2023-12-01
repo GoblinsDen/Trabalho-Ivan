@@ -1,10 +1,10 @@
 using System.Collections;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 //Usar Photon
 using Photon.Realtime;
 using Photon.Pun;
 //UsarUi
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 
@@ -131,9 +131,9 @@ public class Bola_Movimento : MonoBehaviourPunCallbacks
         }
     }
 
-    void BacktoMenu()
+    public void BacktoMenu()
     {
-        PhotonNetwork.LoadLevel("SampleScene");
+        SceneManager.LoadScene("SampleScene");
     }
 
     [PunRPC]

@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 //Usar Photon
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Photon.Realtime;
 using Photon.Pun;
 //UsarUi
@@ -10,11 +11,15 @@ using TMPro;
 
 public class NetworkUI : MonoBehaviourPunCallbacks
 {
+
+    public static NetworkUI instance;
+
     [Header("NetworkMenager")]
     [SerializeField] GameObject Network;
 
-    [Header("Player")]
+    [Header("Player e Bola")]
     [SerializeField] GameObject myPlayer;
+    [SerializeField] GameObject Bola;
 
     [Header("Screens/UI")]
     [SerializeField] GameObject loginUI;
@@ -40,12 +45,12 @@ public class NetworkUI : MonoBehaviourPunCallbacks
     void Start()
     {
 
-        startGame.SetActive(false); // Initially disabled until we know the player is the host
+        startGame.SetActive(false); // Inicialmente desabilitado ate decidir quem eh o host
         loginUI.gameObject.SetActive(true);
         lobbyUI.gameObject.SetActive(false);
         roomUI.gameObject.SetActive(false);
 
-        startGameButton.onClick.AddListener(StartGame);
+        startGameButton.onClick.AddListener(StartGameRPC);
         logInButton.onClick.AddListener(OnLogIn);
         joinRoomButton.onClick.AddListener(searchQuickGame);
         createRoomButton.onClick.AddListener(CreateRoom);
@@ -153,6 +158,11 @@ public class NetworkUI : MonoBehaviourPunCallbacks
         CreateRoom();
     }
 
+    void CreateBola()
+    {
+        PhotonNetwork.Instantiate(Bola.name, Bola.transform.position, Bola.transform.rotation);
+    }
+
     void CreatePlayer()
     {
         object playerType;
@@ -179,17 +189,21 @@ public class NetworkUI : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.LoadLevel("Gameplay");
     }
-
     public void StartGameRPC()
     {
-        GetComponent<PhotonView>().RPC("StartGameRPC", RpcTarget.All);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            GetComponent<PhotonView>().RPC("StartGame", RpcTarget.All);
+        }
     }
+
 
     void OnGameplayLoaded(Scene Scene, LoadSceneMode SceneMode)
     {
         if (Scene.name == "Gameplay")
         {
             CreatePlayer();
+            CreateBola();
         }
     }
 
