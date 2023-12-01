@@ -31,7 +31,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1577410660871039070}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -387.256, y: -321.3, z: 1.0650444}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -104,13 +104,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 13
   acc: 1.5
-  Player1: {fileID: 1900700166184408031, guid: 84842b12bc077bd4c98cec1607e2207c, type: 3}
-  Player2: {fileID: 2707034205390963181, guid: c9349ca7690a0e045a6bc626ae1f3e5e, type: 3}
-  Vitoria: {fileID: 1792816257089571894, guid: 320257dfe785c914cb2283b50fc96e0f, type: 3}
-  Derrota: {fileID: 2029413793026224360, guid: e016967f4b5cff84caaa3679bbabf0b8, type: 3}
-  HUD: {fileID: 4679461750677708419, guid: f47004d83a7c8a144aeb36b0e8cce872, type: 3}
-  BackMenu: {fileID: 0}
-  BackMenu2: {fileID: 0}
 --- !u!58 &1577410660871039067
 CircleCollider2D:
   m_ObjectHideFlags: 0

@@ -203,9 +203,13 @@ public class NetworkUI : MonoBehaviourPunCallbacks
         if (Scene.name == "Gameplay")
         {
             CreatePlayer();
-            CreateBola();
+            if (PhotonNetwork.IsMasterClient)
+            {
+                CreateBola();
+            }
         }
     }
+
 
 }
 
