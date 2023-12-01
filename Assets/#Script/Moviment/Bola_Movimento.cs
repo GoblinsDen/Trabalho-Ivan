@@ -1,10 +1,7 @@
-using System.Collections;
 using UnityEngine;
 //Usar Photon
 using Photon.Realtime;
 using Photon.Pun;
-//UsarUi
-using UnityEngine.UI;
 using TMPro;
 
 public class Bola_Movimento : MonoBehaviourPunCallbacks
@@ -13,24 +10,32 @@ public class Bola_Movimento : MonoBehaviourPunCallbacks
     [SerializeField] float speed = 5.0f; // Velocidade inicial da bola
     [SerializeField] float acc = 0.25f; // Aceleração da bola
 
-    [Header("Placar")]
-    [SerializeField] TextMeshProUGUI Player1;
-    [SerializeField] TextMeshProUGUI Player2;
+    TextMeshProUGUI Player1;
+    TextMeshProUGUI Player2;
 
-    [Header("Telas")]
-    [SerializeField] GameObject inGame;
-    [SerializeField] GameObject VitoriaP1;
-    //[SerializeField] GameObject VitoriaP2;
-
-    public NetworkUI refScript;
+    private PlacarManager placarManager;
 
     private int hitCounter;
     private Rigidbody2D rb;
 
     void Start()
     {
+        placarManager = FindObjectOfType<PlacarManager>();
+        if (placarManager != null)
+        {
+            Player1 = placarManager.Player1Placar;
+            Player2 = placarManager.Player2Placar;
+            placarManager.AtivarDesativarUI("Vitoria", false);
+            placarManager.AtivarDesativarUI("Derrota", false);
+            placarManager.AtivarDesativarUI("HUD", true);
+
+        }
+
         rb = GetComponent<Rigidbody2D>();
-        Invoke("LancarBola", 3f);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Invoke("LancarBola", 3f);
+        }
     }
 
     private void FixedUpdate()
@@ -38,19 +43,25 @@ public class Bola_Movimento : MonoBehaviourPunCallbacks
         rb.velocity = Vector2.ClampMagnitude(rb.velocity, speed + (acc * hitCounter));
     }
 
-    public void LancarBola()
+    void LancarBola()
     {
-        float x = Random.Range(0, 2) == 0 ? -1 : 1;
-        float y = Random.Range(0, 2) == 0 ? -1 : 1;
-        rb.velocity = new Vector2(speed + (acc * hitCounter) * x, speed + (acc * hitCounter) * y);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            float x = Random.Range(0, 2) == 0 ? -1 : 1;
+            float y = Random.Range(0, 2) == 0 ? -1 : 1;
+            rb.velocity = new Vector2(speed * x, speed * y);
+        }
     }
 
     void ResetarBola()
     {
-        rb.velocity = new Vector2(0, 0);
-        transform.position = new Vector2(0, 1);
-        hitCounter = 0;
-        Invoke("LancarBola", 3f);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            rb.velocity = Vector2.zero;
+            transform.position = Vector2.zero;
+            hitCounter = 0;
+            Invoke("LancarBola", 3f);
+        }
     }
 
     void Rebatimento(Transform myObject)
@@ -87,27 +98,19 @@ public class Bola_Movimento : MonoBehaviourPunCallbacks
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (transform.position.x > 0)
+        if (PhotonNetwork.IsMasterClient)
         {
-            ResetarBola();
-            Player1.text = (int.Parse(Player1.text) + 1).ToString();
-        }
-        else if (transform.position.x < 0)
-        {
-            ResetarBola();
-            Player2.text = (int.Parse(Player2.text) + 1).ToString();
-        }
-        if (Player1.text == "5")
-        {
-            refScript.UiHandler(inGame, false);
-            refScript.UiHandler(VitoriaP1, true);
-            PhotonNetwork.Disconnect();
-        }
-        else if (Player2.text == "5")
-        {
-            refScript.UiHandler(inGame, false);
-            //refScript.UiHandler(VitoriaP2, true);
-            //Debug.Log("Player 2 venceu");
+            if (transform.position.x > 0)
+            {
+                ResetarBola();
+                placarManager.photonView.RPC("AtualizarPlacarRPC", RpcTarget.All, 1, int.Parse(Player1.text) + 1);
+            }
+            else if (transform.position.x < 0)
+            {
+                ResetarBola();
+                placarManager.photonView.RPC("AtualizarPlacarRPC", RpcTarget.All, 2, int.Parse(Player2.text) + 1);
+            }
         }
     }
+
 }

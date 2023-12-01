@@ -1,29 +1,28 @@
 using UnityEngine;
+using Photon.Pun;
 
-public class Player_movimento : MonoBehaviour
+public class Player_movimento : MonoBehaviourPun
 {
     [SerializeField] float speed = 10.0f; // Velocidade da raquete
-    [SerializeField] GameObject Bola;
 
     private Rigidbody2D rb;
-    private Vector2 mov;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
     }
+
     void Update()
     {
-        Movimentacao();
+        if (photonView.IsMine)
+        {
+            Movimentacao();
+        }
     }
 
     void Movimentacao()
     {
-        mov = new Vector2(0, Input.GetAxis("Vertical"));
-    }
-
-    private void FixedUpdate()
-    {
-        rb.velocity = mov * speed;
+        float moveVertical = Input.GetAxis("Vertical");
+        rb.velocity = new Vector2(0, moveVertical) * speed;
     }
 }
