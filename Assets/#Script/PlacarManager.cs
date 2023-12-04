@@ -92,20 +92,18 @@ public class PlacarManager : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
-        // Limpar o bojeto Multiplayer que esta dando conflito de ID.
         PhotonView[] photonViews = FindObjectsOfType<PhotonView>();
         foreach (var view in photonViews)
         {
             if (view.gameObject.name == "Multiplayer" && view.IsMine)
             {
+                PhotonNetwork.CleanRpcBufferIfMine(view);
                 PhotonNetwork.Destroy(view.gameObject);
-                break; // Sair do loop uma vez que o objeto foi destruído
+                break;
             }
         }
-
-        // Depois de sair da sala e limpar os objetos, desconectar do Photon e carregar a cena do menu
         SceneManager.LoadScene("SampleScene");
-
     }
+
 
 }

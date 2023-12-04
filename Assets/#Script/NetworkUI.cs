@@ -112,20 +112,16 @@ public class NetworkUI : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinOrCreateRoom(roomName, roomOptions, TypedLobby.Default);
         
     }
-
     public override void OnConnected()
     {
         Debug.Log("Me conectei");
     }
-
     public override void OnConnectedToMaster()
     {
         Debug.Log("Me conectei ao master");
         UiHandler(loginUI, false);
         UiHandler(lobbyUI, true);
-
     }
-
     public override void OnJoinedLobby()
     {
         Debug.Log("Entrei no Lobby");
@@ -137,7 +133,6 @@ public class NetworkUI : MonoBehaviourPunCallbacks
     {
         Debug.Log("Sala " + PhotonNetwork.CurrentRoom.Name + " criada");
     }
-
     public override void OnJoinedRoom()
     {
         Debug.Log("Entrei na room " + PhotonNetwork.CurrentRoom.Name);
@@ -147,15 +142,12 @@ public class NetworkUI : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
         {
             startGame.SetActive(true);
-        }
-        
+        }        
     }
-
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
         startGame.SetActive(PhotonNetwork.IsMasterClient);
     }
-
     public void JoinOrCreateNewGame()
     {
         if (!PhotonNetwork.IsConnected)
@@ -172,8 +164,6 @@ public class NetworkUI : MonoBehaviourPunCallbacks
 
         UiHandler(lobbyUI, false);
     }
-
-
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
         CreateRoom();
@@ -214,14 +204,21 @@ public class NetworkUI : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            GetComponent<PhotonView>().RPC("StartGame", RpcTarget.All);
+            if (GetComponent<PhotonView>() != null)
+            {
+                GetComponent<PhotonView>().RPC("StartGame", RpcTarget.All);
+            }
+            else
+            {
+                Debug.LogWarning("PhotonView not found on the object.");
+            }
         }
     }
 
 
+
     void OnGameplayLoaded(Scene scene, LoadSceneMode mode)
     {
-
         if (scene.name == "Gameplay")
         {
             if (FindObjectOfType<Player_movimento>() == null)
@@ -238,11 +235,7 @@ public class NetworkUI : MonoBehaviourPunCallbacks
             {
                 CreateBola();
             }
-        }
-        
+        }        
     }
-
-
-
 }
 
