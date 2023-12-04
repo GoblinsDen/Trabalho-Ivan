@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class PlacarManager : MonoBehaviourPunCallbacks
 {
+    // Declara variaveis pra UI
     [Header("Telas")]
     [SerializeField] GameObject Vitoria;
     [SerializeField] GameObject Derrota;
@@ -15,22 +16,25 @@ public class PlacarManager : MonoBehaviourPunCallbacks
     public TextMeshProUGUI Player1Placar;
     public TextMeshProUGUI Player2Placar;
 
+    // Botoes de UI
     [Header("buttons")]
     [SerializeField] Button Vitoria_btn;
     [SerializeField] Button Derrota_btn;
 
+    //Adiciona listeners aos botões
     private void Start()
     {
-
         Vitoria_btn.onClick.AddListener(BacktoMenu);
         Derrota_btn.onClick.AddListener(BacktoMenu);
     }
 
+    // Atualiza o placar, chama qdo um jogador faz ponto
     public void AtualizarPlacar(int player, int pontos)
     {
         if (player == 1)
         {
             Player1Placar.text = pontos.ToString();
+            //qdo jogador chegar a 5 pontos, termina o jogo
             if (pontos >= 5)
             {
                 EndGame(1);
@@ -46,18 +50,20 @@ public class PlacarManager : MonoBehaviourPunCallbacks
         }
     }
 
-
+    // RPC pra atualizar o placar
     [PunRPC]
     public void AtualizarPlacarRPC(int player, int pontos)
     {
         AtualizarPlacar(player, pontos);
     }
 
-    // Método para ser chamado quando o jogo termina
+    // Metodo chamado qdo o jogo termina
     void EndGame(int winner)
     {
+        // Desativa a UI do jogo e ativa a de vitória/derrota
         AtivarDesativarUI("HUD", false);
 
+        // Mostra tela de vitória ou derrota dependendo do jogador
         if ((winner == 1 && photonView.IsMine) || (winner == 2 && !photonView.IsMine))
         {
             AtivarDesativarUI("Vitoria", true);
@@ -68,7 +74,7 @@ public class PlacarManager : MonoBehaviourPunCallbacks
         }
     }
 
-
+    // Ativar/desativar as UIs
     public void AtivarDesativarUI(string uiName, bool ativar)
     {
         switch (uiName)
@@ -84,14 +90,17 @@ public class PlacarManager : MonoBehaviourPunCallbacks
                 break;
         }
     }
+
+    // Volta pro menu principal
     public void BacktoMenu()
     {
         PhotonNetwork.LeaveRoom();
     }
 
-
+    // Chamado qdo o jogador sai da sala
     public override void OnLeftRoom()
     {
+        // Procura e destroi o obj "Multiplayer" q pode causar conflito de ID
         PhotonView[] photonViews = FindObjectsOfType<PhotonView>();
         foreach (var view in photonViews)
         {
@@ -102,8 +111,9 @@ public class PlacarManager : MonoBehaviourPunCallbacks
                 break;
             }
         }
+
+        // Carrega a cena do menu
         SceneManager.LoadScene("SampleScene");
     }
-
 
 }

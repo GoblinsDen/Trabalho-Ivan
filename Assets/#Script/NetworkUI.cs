@@ -1,193 +1,178 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 //Usar Photon
-using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Photon.Realtime;
 using Photon.Pun;
 //UsarUi
 using UnityEngine.UI;
-using TMPro;
 
 public class NetworkUI : MonoBehaviourPunCallbacks
 {
-
+    // Variavel serializada pra UI, jogador, bola etc.
     public static NetworkUI instance;
-
     [Header("NetworkMenager")]
     [SerializeField] GameObject Network;
-
     [Header("Player e Bola")]
     [SerializeField] GameObject myPlayer;
     [SerializeField] GameObject Bola;
 
+    // UIs
     [Header("Screens/UI")]
     [SerializeField] GameObject loginUI;
     [SerializeField] GameObject lobbyUI;
     [SerializeField] GameObject roomUI;
 
+    // Botoes
     [Header("Button")]
-    [SerializeField] GameObject startGame; // Só o Host pode ver
-    [SerializeField] Button startGameButton; //Só o Host pode ver
+    [SerializeField] GameObject startGame; // So o master ve
+    [SerializeField] Button startGameButton; // idem
     [SerializeField] Button logInButton;
     [SerializeField] Button joinRoomButton;
     [SerializeField] Button createRoomButton;
 
+    // Campos de texto pra nome do player e da sala
     [Header("InputField")]
     [SerializeField] InputField playerInputName;
     [SerializeField] InputField roomInputName;
-
-    [Header("Lista de Nomes")]
-    [SerializeField] Text name;
 
     string playerNameTemp;
 
     void Start()
     {
+        // Sincroniza as cenas entre jogadores
         PhotonNetwork.AutomaticallySyncScene = true;
 
-        startGame.SetActive(false); // Inicialmente desabilitado ate decidir quem eh o host
+        // Configuração inicial da UI
+        startGame.SetActive(false);
         loginUI.gameObject.SetActive(true);
         lobbyUI.gameObject.SetActive(false);
         roomUI.gameObject.SetActive(false);
 
+        // Add listeners dos botoes
         startGameButton.onClick.AddListener(StartGameRPC);
         logInButton.onClick.AddListener(OnLogIn);
         joinRoomButton.onClick.AddListener(searchQuickGame);
         createRoomButton.onClick.AddListener(CreateRoom);
 
+        // Gera um nome padrao pro jogador
         GenerateDefaultName();
-
     }
 
+    // Garante que o objeto n seja destruido ao carregar novas cenas
     private void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
         SceneManager.sceneLoaded += OnGameplayLoaded;
     }
 
+    // Gera um nome random
     void GenerateDefaultName()
     {
         playerNameTemp = "Player_" + Random.Range(1, 99999);
         playerInputName.text = playerNameTemp;
     }
 
+    // Controla o trigger das UI
     public void UiHandler(GameObject ui, bool isActive)
     {
         ui.gameObject.SetActive(isActive);
     }
 
+    // Conecta ao Photon quando clica no botão de login
     public void OnLogIn()
     {
-
-        Debug.Log("Botão Login pressionado");
-
         PhotonNetwork.ConnectUsingSettings();
         PhotonNetwork.NickName = playerInputName.text;
-        name.text = playerInputName.text;
         UiHandler(loginUI, false);
-
     }
 
+    // Entra em uma room ja existente
     public void searchQuickGame()
     {
-        Debug.Log("Search quick game!");
         PhotonNetwork.JoinLobby();
     }
 
+    // Cria uma sala com um nome aleatorio ou especific
     public void CreateRoom()
     {
-        Debug.Log("Criar Sala!");
-
         string roomName = roomInputName.text;
-
         if (roomName == "")
             roomName = "Room_" + Random.Range(1, 9999);
-
-        RoomOptions roomOptions = new RoomOptions()
-        {
-            MaxPlayers = 2
-        };
-
+        RoomOptions roomOptions = new RoomOptions() { MaxPlayers = 2 };
         PhotonNetwork.JoinOrCreateRoom(roomName, roomOptions, TypedLobby.Default);
-        
     }
-    public override void OnConnected()
-    {
-        Debug.Log("Me conectei");
+
+    // metodos que lidam com eventos de conexão
+    public override void OnConnected() 
+    { 
+        Debug.Log("Me conectei"); 
     }
     public override void OnConnectedToMaster()
     {
-        Debug.Log("Me conectei ao master");
-        UiHandler(loginUI, false);
+        //Ajusta as telas
+        UiHandler(loginUI, false); // parece redundante, mas no 2 ciclo de gameplay tava aparecendo qd n deveria
         UiHandler(lobbyUI, true);
     }
-    public override void OnJoinedLobby()
-    {
-        Debug.Log("Entrei no Lobby");
-        PhotonNetwork.JoinRandomRoom();
+    public override void OnJoinedLobby() 
+    { 
+        PhotonNetwork.JoinRandomRoom(); 
     }
-
-    public override void OnCreatedRoom()
-
-    {
-        Debug.Log("Sala " + PhotonNetwork.CurrentRoom.Name + " criada");
+    public override void OnCreatedRoom() 
+    { 
+        Debug.Log("Sala criada"); 
     }
     public override void OnJoinedRoom()
     {
-        Debug.Log("Entrei na room " + PhotonNetwork.CurrentRoom.Name);
-        Debug.Log("Tem um total de " + PhotonNetwork.CurrentRoom.PlayerCount + " jogadores na sala");
         UiHandler(lobbyUI, false);
         UiHandler(roomUI, true);
-        if (PhotonNetwork.IsMasterClient)
-        {
-            startGame.SetActive(true);
-        }        
+        if (PhotonNetwork.IsMasterClient) 
+        { 
+            startGame.SetActive(true); //metodo que deixa so o master startar o game
+        }
     }
-    public override void OnMasterClientSwitched(Player newMasterClient)
-    {
-        startGame.SetActive(PhotonNetwork.IsMasterClient);
+    public override void OnMasterClientSwitched(Player newMasterClient) 
+    { 
+        startGame.SetActive(PhotonNetwork.IsMasterClient); 
     }
+
+    // Metodo criado para funcionar mais de um ciclo de gameplay
     public void JoinOrCreateNewGame()
     {
         if (!PhotonNetwork.IsConnected)
         {
-            Debug.Log("Reconectando ao Photon...");
             PhotonNetwork.ConnectUsingSettings();
             PhotonNetwork.NickName = playerNameTemp;
         }
-        else
-        {
-            Debug.Log("Já conectado. Tentando entrar em uma sala aleatória...");
-            PhotonNetwork.JoinRandomRoom();
+        else 
+        { 
+            PhotonNetwork.JoinRandomRoom(); 
         }
-
-        UiHandler(lobbyUI, false);
+        UiHandler(lobbyUI, false); 
     }
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
         CreateRoom();
     }
-
+    //Metodo que instancia a bola
     void CreateBola()
     {
         PhotonNetwork.Instantiate(Bola.name, Bola.transform.position, Bola.transform.rotation);
     }
-
+    //Metodo que instancia os players
     void CreatePlayer()
     {
         object playerType;
 
         PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("characterType", out playerType);
 
-        if (PhotonNetwork.LocalPlayer.IsMasterClient)
+        if (PhotonNetwork.LocalPlayer.IsMasterClient) // Se for o master vai na esquerda do mapa
         {
             Vector2 startPositionPlayer = new Vector2(-(float)7.5, 0);
             Quaternion startRotationPlayer = new Quaternion(0, 0, 0, 1);
             PhotonNetwork.Instantiate(myPlayer.name, startPositionPlayer, startRotationPlayer);
 
         }
-        else
+        else // Se nao, vai a direita do mapa
         {
             Vector2 startPositionPlayer = new Vector2((float)7.5, 0);
             Quaternion startRotationPlayer = new Quaternion(0, 0, 0, 1);
@@ -195,6 +180,7 @@ public class NetworkUI : MonoBehaviourPunCallbacks
         }
     }
 
+    //Troca de cena
     [PunRPC]
     public void StartGame()
     {
@@ -210,17 +196,15 @@ public class NetworkUI : MonoBehaviourPunCallbacks
             }
             else
             {
-                Debug.LogWarning("PhotonView not found on the object.");
+                Debug.LogWarning("PhotonView nao foi encotrado no objeto.");
             }
         }
     }
-
-
-
     void OnGameplayLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "Gameplay")
         {
+            // Verifica se ja existe players na cena para evitar duplicatas
             if (FindObjectOfType<Player_movimento>() == null)
             {
                 CreatePlayer();
@@ -230,7 +214,7 @@ public class NetworkUI : MonoBehaviourPunCallbacks
                 Debug.Log("Nada");
             }
 
-            // Verifica se já existe uma bola na cena para evitar duplicatas
+            // Verifica se ja existe uma bola na cena para evitar duplicatas
             if (FindObjectOfType<Bola_Movimento>() == null && PhotonNetwork.IsMasterClient)
             {
                 CreateBola();
