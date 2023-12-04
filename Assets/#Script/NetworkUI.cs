@@ -198,17 +198,20 @@ public class NetworkUI : MonoBehaviourPunCallbacks
     }
 
 
-    void OnGameplayLoaded(Scene Scene, LoadSceneMode SceneMode)
+    void OnGameplayLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (Scene.name == "Gameplay")
+        if (scene.name == "Gameplay" && PhotonNetwork.IsMasterClient)
         {
-            CreatePlayer();
-            if (PhotonNetwork.IsMasterClient)
+            // Verifica se já existe uma bola na cena para evitar duplicatas
+            if (FindObjectOfType<Bola_Movimento>() == null)
             {
                 CreateBola();
             }
+
+            CreatePlayer();
         }
     }
+
 
 
 }

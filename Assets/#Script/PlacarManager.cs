@@ -85,8 +85,24 @@ public class PlacarManager : MonoBehaviourPunCallbacks
     }
     public void BacktoMenu()
     {
-        Debug.Log("teste");
+        // Primeiro deixar a sala para disparar o callback OnLeftRoom
+        PhotonNetwork.LeaveRoom();
+    }
+
+    public override void OnLeftRoom()
+    {
+        // Limpar todos os objetos de rede
+        foreach (var photonView in FindObjectsOfType<PhotonView>())
+        {
+            if (photonView.IsMine)
+            {
+                PhotonNetwork.Destroy(photonView.gameObject);
+            }
+        }
+
+        // Depois de sair da sala e limpar os objetos, desconectar do Photon e carregar a cena do menu
         PhotonNetwork.Disconnect();
         SceneManager.LoadScene("SampleScene");
     }
+
 }
