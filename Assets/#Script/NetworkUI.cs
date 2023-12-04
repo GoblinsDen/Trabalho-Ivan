@@ -120,6 +120,7 @@ public class NetworkUI : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("Me conectei ao master");
+        UiHandler(loginUI, false);
         UiHandler(lobbyUI, true);
 
     }
@@ -131,6 +132,7 @@ public class NetworkUI : MonoBehaviourPunCallbacks
     }
 
     public override void OnCreatedRoom()
+
     {
         Debug.Log("Sala " + PhotonNetwork.CurrentRoom.Name + " criada");
     }
@@ -145,13 +147,31 @@ public class NetworkUI : MonoBehaviourPunCallbacks
         {
             startGame.SetActive(true);
         }
-    
+        
     }
 
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
         startGame.SetActive(PhotonNetwork.IsMasterClient);
     }
+
+    public void JoinOrCreateNewGame()
+    {
+        if (!PhotonNetwork.IsConnected)
+        {
+            Debug.Log("Reconectando ao Photon...");
+            PhotonNetwork.ConnectUsingSettings();
+            PhotonNetwork.NickName = playerNameTemp;
+        }
+        else
+        {
+            Debug.Log("Já conectado. Tentando entrar em uma sala aleatória...");
+            PhotonNetwork.JoinRandomRoom();
+        }
+
+        UiHandler(lobbyUI, false);
+    }
+
 
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
@@ -200,7 +220,6 @@ public class NetworkUI : MonoBehaviourPunCallbacks
 
     void OnGameplayLoaded(Scene scene, LoadSceneMode mode)
     {
-
 
         if (scene.name == "Gameplay")
         {

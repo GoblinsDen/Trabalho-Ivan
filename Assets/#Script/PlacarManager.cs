@@ -85,24 +85,28 @@ public class PlacarManager : MonoBehaviourPunCallbacks
     }
     public void BacktoMenu()
     {
-        // Primeiro deixar a sala para disparar o callback OnLeftRoom
         PhotonNetwork.LeaveRoom();
     }
 
+
     public override void OnLeftRoom()
     {
-        // Limpar todos os objetos de rede
-        foreach (var photonView in FindObjectsOfType<PhotonView>())
+        // Limpar o bojeto Multiplayer que esta dando conflito de ID.
+        PhotonView[] photonViews = FindObjectsOfType<PhotonView>();
+        foreach (var view in photonViews)
         {
-            if (photonView.IsMine)
+            if (view.gameObject.name == "Multiplayer" && view.IsMine)
             {
-                PhotonNetwork.Destroy(photonView.gameObject);
+                PhotonNetwork.Destroy(view.gameObject);
+                break; // Sair do loop uma vez que o objeto foi destruído
             }
         }
 
+
+
         // Depois de sair da sala e limpar os objetos, desconectar do Photon e carregar a cena do menu
-        PhotonNetwork.Disconnect();
         SceneManager.LoadScene("SampleScene");
+
     }
 
 }
