@@ -44,6 +44,7 @@ public class NetworkUI : MonoBehaviourPunCallbacks
 
     void Start()
     {
+        PhotonNetwork.AutomaticallySyncScene = true;
 
         startGame.SetActive(false); // Inicialmente desabilitado ate decidir quem eh o host
         loginUI.gameObject.SetActive(true);
@@ -223,7 +224,14 @@ public class NetworkUI : MonoBehaviourPunCallbacks
 
         if (scene.name == "Gameplay")
         {
-            CreatePlayer();
+            if (FindObjectOfType<Player_movimento>() == null)
+            {
+                CreatePlayer();
+            }
+            else
+            {
+                Debug.Log("Nada");
+            }
 
             // Verifica se já existe uma bola na cena para evitar duplicatas
             if (FindObjectOfType<Bola_Movimento>() == null && PhotonNetwork.IsMasterClient)

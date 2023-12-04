@@ -21,6 +21,7 @@ public class PlacarManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
+
         Vitoria_btn.onClick.AddListener(BacktoMenu);
         Derrota_btn.onClick.AddListener(BacktoMenu);
     }
@@ -101,8 +102,6 @@ public class PlacarManager : MonoBehaviourPunCallbacks
                 break; // Sair do loop uma vez que o objeto foi destruído
             }
         }
-
-
 
         // Depois de sair da sala e limpar os objetos, desconectar do Photon e carregar a cena do menu
         SceneManager.LoadScene("SampleScene");
